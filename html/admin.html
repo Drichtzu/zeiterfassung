@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin-Bereich</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="icon" type="image/jpeg" href="../img/favicon.jpg">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Admin-Bereich</h1>
+            <div class="button-container">
+                <a href="../index.html" class="button">Zurück zur Hauptseite</a>
+                <button id="newEmployeeButton" class="button">Neuer Mitarbeiter</button>
+                <button id="printAllButton" class="button">Alle Zeiten drucken</button>
+            </div>
+        </div>
+        <div id="newEmployeeForm" style="display: none;">
+            <h3>Neuen Mitarbeiter hinzufügen</h3>
+            <form id="employeeForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newEmployeeNumber">Mitarbeiternummer:</label>
+                        <input type="text" id="newEmployeeNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Vorname:</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Nachname:</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="existingEmployee">
+                        <label for="existingEmployee">Bestehender Mitarbeiter</label>
+                    </div>
+                </div>
+                <div id="existingHoursGroup" class="form-row" style="display: none;">
+                    <div class="form-group">
+                        <label for="existingHours">Bestehendes Stundenkonto (z.B. 1,75 für 1 Stunde 45 Minuten):</label>
+                        <input type="text" id="existingHours" placeholder="0,00">
+                    </div>
+                </div>
+                <button type="button" id="addEmployeeButton">Mitarbeiter hinzufügen</button>
+            </form>
+        </div>
+        <h2>Mitarbeiterübersicht:</h2>
+        <table id="employeeTable">
+            <thead>
+                <tr>
+                    <th>Mitarbeiternummer</th>
+                    <th>Vorname</th>
+                    <th>Nachname</th>
+                    <th>Stundenkonto</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Hier werden die Mitarbeiterdaten dynamisch eingefügt -->
+            </tbody>
+        </table>
+    </div>
+    <script src="../js/admin.js"></script>
+    <script src="../js/add-employee.js"></script>
+    <script src="../js/employee-details.js"></script>
+    <script src="../js/print-all-times.js"></script>
+</body>
+</html>

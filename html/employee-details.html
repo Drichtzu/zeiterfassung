@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitarbeiter Zeiterfassung</title>
+    <link rel="stylesheet" href="../css/employee-details.css">
+</head>
+<body>
+    <h1>Zeiterfassung für <span id="employeeName"></span></h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Arbeitsbeginn</th>
+                <th>Arbeitsende</th>
+                <th>Pause</th>
+                <th>Gesamtarbeitszeit</th>
+                <!-- Zeitstempel-Spalte wird dynamisch hinzugefügt, wenn der Benutzer ein Admin ist -->
+            </tr>
+        </thead>
+        <tbody id="timeTableBody">
+            <!-- Hier werden die Zeiterfassungsdaten dynamisch eingefügt -->
+        </tbody>
+    </table>
+    <script src="../js/employee-details.js"></script>
+</body>
+</html>
