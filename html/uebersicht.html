@@ -3,37 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeiterfassung - Übersicht</title>
+    <title>Übersicht</title>
     <link rel="stylesheet" href="../css/uebersicht.css">
-    <link rel="icon" type="image/jpeg" href="../img/favicon.jpg">
+    <link rel="icon" href="../img/favicon.jpg" type="image/jpg">
 </head>
 <body>
-    <div class="container">
-        <h1>Übersicht der erfassten Zeiten</h1>
-        <div id="employeeInfo"></div>
-        <div id="stundenkontoContainer">
-            <h2>Stundenkonto</h2>
-            <p id="stundenkontoStand"></p>
-        </div>
-        <table id="timeTable">
-            <thead>
-                <tr>
-                    <th>Datum</th>
-                    <th>Arbeitsbeginn</th>
-                    <th>Arbeitsende</th>
-                    <th>Pause</th>
-                    <th>Gesamtarbeitszeit</th>
-                    <th>Stundenkonto</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Hier werden die Zeiten dynamisch eingefügt -->
-            </tbody>
-        </table>
-        <div class="button-container">
-            <a href="../index.html" class="button">Zurück zur Erfassung</a>
-        </div>
-    </div>
+    <h1>Übersicht der Zeiterfassung</h1>
+    <nav>
+        <ul>
+            <li><a href="#allEmployees">Alle Mitarbeiter</a></li>
+            <li><a href="#allTimeEntries">Alle Zeiteinträge</a></li>
+        </ul>
+    </nav>
+    
+    <section id="allEmployees">
+        <h2>Alle Mitarbeiter</h2>
+        <ul id="allEmployeesList"></ul>
+    </section>
+    
+    <section id="allTimeEntries">
+        <h2>Alle Zeiteinträge</h2>
+        <ul id="allTimeEntriesList"></ul>
+    </section>
+    
+    <button id="printAllTimesButton" onclick="printAllTimes()">Alle Zeiten drucken</button>
+    
     <script src="../js/uebersicht.js"></script>
+    <script src="../js/print-all-times.js"></script>
 </body>
 </html>
