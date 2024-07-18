@@ -4,17 +4,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!sessionStorage.getItem('isAdmin')) {
         console.log('Kein Admin-Zugriff');
         alert('Zugriff verweigert. Bitte loggen Sie sich als Admin ein.');
-        window.location.href = '/zeiterfassung/index.html';
+        window.location.href = '/index.html';
         return;
     }
 
     console.log('Admin-Zugriff bestätigt');
 
-    const employeeList = document.getElementById('employeeList');
-    if (!employeeList) {
-        console.error('Mitarbeiterliste-Element nicht gefunden');
+    const employeeTable = document.getElementById('employeeTable');
+    if (!employeeTable) {
+        console.error('Mitarbeitertabelle-Element nicht gefunden');
     } else {
-        console.log('Mitarbeiterliste-Element gefunden');
+        console.log('Mitarbeitertabelle-Element gefunden');
         setTimeout(loadEmployeeList, 0);  // Verzögerte Ausführung
     }
 
@@ -47,7 +47,7 @@ function initializeEventListeners() {
 
 function loadEmployeeList() {
     console.log('Lade Mitarbeiterliste');
-    fetch('/zeiterfassung/api/employees.php')
+    fetch('/api/employees.php')
         .then(response => {
             console.log('Antwort erhalten:', response.status);
             if (!response.ok) {
@@ -57,16 +57,26 @@ function loadEmployeeList() {
         })
         .then(employees => {
             console.log('Mitarbeiterdaten empfangen:', employees);
-            const employeeList = document.getElementById('employeeList');
-            if (!employeeList) {
-                console.error('Mitarbeiterliste-Element nicht gefunden');
+            const employeeTableBody = document.querySelector('#employeeTable tbody');
+            if (!employeeTableBody) {
+                console.error('Mitarbeitertabelle-Body nicht gefunden');
                 return;
             }
-            employeeList.innerHTML = '';
+            employeeTableBody.innerHTML = '';
             employees.forEach(employee => {
-                const li = document.createElement('li');
-                li.textContent = `${employee.firstName} ${employee.lastName} (${employee.number})`;
-                employeeList.appendChild(li);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${employee.number}</td>
+                    <td>${employee.firstName}</td>
+                    <td>${employee.lastName}</td>
+                    <td>${employee.existingHours || '0,00'}</td>
+                    <td>
+                        <button onclick="showEmployeeDetails(${employee.id})">Details</button>
+                        <button onclick="editEmployee(${employee.id})">Bearbeiten</button>
+                        <button onclick="deleteEmployee(${employee.id})">Löschen</button>
+                    </td>
+                `;
+                employeeTableBody.appendChild(row);
             });
             console.log('Mitarbeiterliste aktualisiert');
         })
@@ -95,7 +105,7 @@ function addNewEmployee() {
         existingHours: existingHours
     };
 
-    fetch('/zeiterfassung/api/employees.php', {
+    fetch('/api/employees.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -111,7 +121,7 @@ function addNewEmployee() {
     .then(data => {
         if (data.success) {
             alert('Mitarbeiter erfolgreich hinzugefügt');
-            document.getElementById('newEmployeeForm').reset();
+            document.getElementById('employeeForm').reset();
             document.getElementById('newEmployeeForm').style.display = 'none';
             loadEmployeeList();
         } else {
@@ -122,4 +132,20 @@ function addNewEmployee() {
         console.error('Fehler:', error);
         alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
     });
+}
+
+// Platzhalter-Funktionen für die Aktionen
+function showEmployeeDetails(id) {
+    console.log('Details anzeigen für Mitarbeiter ID:', id);
+    // Implementieren Sie hier die Logik zum Anzeigen der Mitarbeiterdetails
+}
+
+function editEmployee(id) {
+    console.log('Bearbeiten von Mitarbeiter ID:', id);
+    // Implementieren Sie hier die Logik zum Bearbeiten eines Mitarbeiters
+}
+
+function deleteEmployee(id) {
+    console.log('Löschen von Mitarbeiter ID:', id);
+    // Implementieren Sie hier die Logik zum Löschen eines Mitarbeiters
 }
