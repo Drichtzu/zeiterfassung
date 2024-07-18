@@ -19,7 +19,7 @@
             <button type="submit">Einloggen</button>
         </form>
     </div>
-    <div id="timeEntryContainer">
+    <div id="timeEntryContainer" style="display: none;">
         <h2>Zeiterfassung</h2>
         <form id="timeEntryForm">
             <input type="date" id="date" required>
@@ -29,6 +29,10 @@
             <button type="submit">Zeit eintragen</button>
         </form>
     </div>
+    <form id="accessForm">
+        <input type="text" id="accessCode" placeholder="Zugangscode eingeben">
+        <button type="submit">Zugriff anfordern</button>
+    </form>
     <script src="js/admin-login.js"></script>
     <script src="js/zeitrechnung.js"></script>
     <script src="js/overview-access.js"></script>
