@@ -15,9 +15,13 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Mitarbeiterliste-Element nicht gefunden');
     } else {
         console.log('Mitarbeiterliste-Element gefunden');
-        loadEmployeeList();
+        setTimeout(loadEmployeeList, 0);  // Verzögerte Ausführung
     }
 
+    initializeEventListeners();
+});
+
+function initializeEventListeners() {
     const newEmployeeButton = document.getElementById('newEmployeeButton');
     const newEmployeeForm = document.getElementById('newEmployeeForm');
     const addEmployeeButton = document.getElementById('addEmployeeButton');
@@ -39,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (addEmployeeButton) {
         addEmployeeButton.addEventListener('click', addNewEmployee);
     }
-});
+}
 
 function loadEmployeeList() {
     console.log('Lade Mitarbeiterliste');
