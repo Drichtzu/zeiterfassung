@@ -1,11 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Admin-Seite geladen');
+
     if (!sessionStorage.getItem('isAdmin')) {
+        console.log('Kein Admin-Zugriff');
         alert('Zugriff verweigert. Bitte loggen Sie sich als Admin ein.');
-        window.location.href = '../index.html';
+        window.location.href = '/zeiterfassung/index.html';
         return;
     }
 
-    loadEmployeeList();
+    console.log('Admin-Zugriff bestätigt');
+
+    const employeeList = document.getElementById('employeeList');
+    if (!employeeList) {
+        console.error('Mitarbeiterliste-Element nicht gefunden');
+    } else {
+        console.log('Mitarbeiterliste-Element gefunden');
+        loadEmployeeList();
+    }
 
     const newEmployeeButton = document.getElementById('newEmployeeButton');
     const newEmployeeForm = document.getElementById('newEmployeeForm');
@@ -31,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadEmployeeList() {
-    fetch('http://192.168.177.159/api/employees.php')
+    console.log('Lade Mitarbeiterliste');
+    fetch('/zeiterfassung/api/employees.php')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Netzwerkantwort war nicht ok');
@@ -58,9 +70,9 @@ function loadEmployeeList() {
 }
 
 function addNewEmployee() {
-    const number = document.getElementById('newEmployeeNumber').value;
-    const firstName = document.getElementById('firstName').value;
-    const lastName = document.getElementById('lastName').value;
+    const number = document.getElementById('newEmployeeNumber').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
     const existingEmployee = document.getElementById('existingEmployee').checked;
     const existingHours = existingEmployee ? document.getElementById('existingHours').value : '0';
 
@@ -76,7 +88,7 @@ function addNewEmployee() {
         existingHours: existingHours
     };
 
-    fetch('http://192.168.177.159/api/employees.php', {
+    fetch('/zeiterfassung/api/employees.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
