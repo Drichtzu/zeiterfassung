@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeiterfassung - Übersicht</title>
+    <link rel="stylesheet" href="../css/uebersicht.css">
+    <link rel="icon" type="image/jpeg" href="../img/favicon.jpg">
+</head>
+<body>
+    <div class="container">
+        <h1>Übersicht der erfassten Zeiten</h1>
+        <div id="employeeInfo"></div>
+        <div id="stundenkontoContainer">
+            <h2>Stundenkonto</h2>
+            <p id="stundenkontoStand"></p>
+        </div>
+        <table id="timeTable">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Arbeitsbeginn</th>
+                    <th>Arbeitsende</th>
+                    <th>Pause</th>
+                    <th>Gesamtarbeitszeit</th>
+                    <th>Stundenkonto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Hier werden die Zeiten dynamisch eingefügt -->
+            </tbody>
+        </table>
+        <div class="button-container">
+            <a href="../index.html" class="button">Zurück zur Erfassung</a>
+        </div>
+    </div>
+    <script src="../js/uebersicht.js"></script>
+</body>
+</html>

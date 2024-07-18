@@ -5,36 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zeiterfassung</title>
     <link rel="stylesheet" href="css/index.css">
-    <link rel="icon" href="img/favicon.jpg" type="image/jpg">
+    <link rel="icon" type="image/jpeg" href="img/favicon.jpg">
 </head>
 <body>
-    <h1>Zeiterfassung</h1>
-    <div id="loginContainer">
-        <button id="loginButton">Admin-Login</button>
-    </div>
-    <div id="employeeLoginContainer">
-        <h2>Mitarbeiter-Login</h2>
-        <form id="employeeLoginForm">
-            <input type="text" id="employeeNumber" placeholder="Mitarbeiternummer" required>
-            <button type="submit">Einloggen</button>
+    <div class="container">
+        <div class="header-container">
+            <h1 id="mainHeader">Zeiterfassung</h1>
+            <button id="loginButton" class="login-button">Login</button>
+        </div>
+        <form id="timeForm">
+            <label for="employeeNumber">Mitarbeiternummer:</label>
+            <input type="text" id="employeeNumber" name="employeeNumber" required>
+
+            <label for="start">Arbeitsbeginn:</label>
+            <input type="time" id="start" name="start" step="900" required>
+
+            <label for="end">Arbeitsende:</label>
+            <input type="time" id="end" name="end" step="900" required>
+
+            <label for="break">Pause (in Minuten):</label>
+            <input type="number" id="break" name="break" min="0" step="15" value="0">
+
+            <button type="button" id="calculateButton">Zeit erfassen</button>
         </form>
+        <a href="#" class="button" id="overviewButton">Zur Übersicht</a>
     </div>
-    <div id="timeEntryContainer" style="display: none;">
-        <h2>Zeiterfassung</h2>
-        <form id="timeEntryForm">
-            <input type="date" id="date" required>
-            <input type="time" id="startTime" required>
-            <input type="time" id="endTime" required>
-            <input type="number" id="pauseDuration" placeholder="Pausendauer in Minuten" required>
-            <button type="submit">Zeit eintragen</button>
-        </form>
-    </div>
-    <form id="accessForm">
-        <input type="text" id="accessCode" placeholder="Zugangscode eingeben">
-        <button type="submit">Zugriff anfordern</button>
-    </form>
-    <script src="js/admin-login.js"></script>
     <script src="js/zeitrechnung.js"></script>
+    <script src="js/admin-login.js"></script>
     <script src="js/overview-access.js"></script>
 </body>
 </html>
