@@ -1,27 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const newEmployeeButton = document.getElementById('newEmployeeButton');
-    const newEmployeeForm = document.getElementById('newEmployeeForm');
-    const addEmployeeButton = document.getElementById('addEmployeeButton');
-    const existingEmployeeCheckbox = document.getElementById('existingEmployee');
-    const existingHoursGroup = document.getElementById('existingHoursGroup');
-
-    if (newEmployeeButton) {
-        newEmployeeButton.addEventListener('click', () => {
-            newEmployeeForm.style.display = 'block';
-        });
-    }
-
-    if (existingEmployeeCheckbox) {
-        existingEmployeeCheckbox.addEventListener('change', (e) => {
-            existingHoursGroup.style.display = e.target.checked ? 'block' : 'none';
-        });
-    }
-
-    if (addEmployeeButton) {
-        addEmployeeButton.addEventListener('click', addNewEmployee);
-    }
-});
-
 function addNewEmployee() {
     const number = document.getElementById('newEmployeeNumber').value.trim();
     const firstName = document.getElementById('firstName').value.trim();
@@ -41,7 +17,7 @@ function addNewEmployee() {
         existingHours: existingHours
     };
 
-    fetch('/zeiterfassung/api/employees.php', {
+    fetch('/api/employees.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -49,19 +25,23 @@ function addNewEmployee() {
         body: JSON.stringify(employeeData)
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Netzwerkantwort war nicht ok');
-        }
-        return response.json();
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        return response.text().then(text => {
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Fehler beim Parsen der JSON-Antwort:', text);
+                throw new Error('Ungültige JSON-Antwort vom Server');
+            }
+        });
     })
     .then(data => {
         if (data.success) {
             alert('Mitarbeiter erfolgreich hinzugefügt');
-            document.getElementById('newEmployeeForm').reset();
+            document.getElementById('employeeForm').reset();
             document.getElementById('newEmployeeForm').style.display = 'none';
-            if (typeof loadEmployeeList === 'function') {
-                loadEmployeeList();
-            }
+            loadEmployeeList();
         } else {
             alert('Fehler beim Hinzufügen des Mitarbeiters: ' + data.message);
         }
