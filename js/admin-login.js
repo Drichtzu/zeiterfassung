@@ -15,7 +15,7 @@ function showLoginPrompt() {
 
     if (userInput !== null) {
         console.log('Passwort eingegeben, sende Anfrage');
-        fetch('http://192.168.177.159/api/admin-login.php', {
+        fetch('/zeiterfassung/api/admin-login.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ function showLoginPrompt() {
             if (data.success) {
                 console.log('Login erfolgreich, leite weiter');
                 sessionStorage.setItem('isAdmin', 'true');
-                window.location.href = 'admin.html';
+                window.location.href = '/zeiterfassung/html/admin.html';
             } else {
                 console.log('Login fehlgeschlagen');
                 alert("Falsches Passwort. Zugriff verweigert.");
