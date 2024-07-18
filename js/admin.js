@@ -59,3 +59,63 @@ function loadEmployeeList() {
                 return;
             }
             employeeList.innerHTML = '';
+            employees.forEach(employee => {
+                const li = document.createElement('li');
+                li.textContent = `${employee.firstName} ${employee.lastName} (${employee.number})`;
+                employeeList.appendChild(li);
+            });
+            console.log('Mitarbeiterliste aktualisiert');
+        })
+        .catch(error => {
+            console.error('Fehler beim Laden der Mitarbeiterliste:', error);
+            alert('Fehler beim Laden der Mitarbeiterliste');
+        });
+}
+
+function addNewEmployee() {
+    const number = document.getElementById('newEmployeeNumber').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const existingEmployee = document.getElementById('existingEmployee').checked;
+    const existingHours = existingEmployee ? document.getElementById('existingHours').value : '0';
+
+    if (!number || !firstName || !lastName) {
+        alert('Bitte füllen Sie alle Pflichtfelder aus.');
+        return;
+    }
+
+    const employeeData = {
+        number: number,
+        firstName: firstName,
+        lastName: lastName,
+        existingHours: existingHours
+    };
+
+    fetch('/zeiterfassung/api/employees.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employeeData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Netzwerkantwort war nicht ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Mitarbeiter erfolgreich hinzugefügt');
+            document.getElementById('newEmployeeForm').reset();
+            document.getElementById('newEmployeeForm').style.display = 'none';
+            loadEmployeeList();
+        } else {
+            alert('Fehler beim Hinzufügen des Mitarbeiters: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Fehler:', error);
+        alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+    });
+}
