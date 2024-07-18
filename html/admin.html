@@ -11,9 +11,9 @@
     
     <button id="newEmployeeButton">Neuen Mitarbeiter hinzufügen</button>
     <div id="newEmployeeForm" style="display: none;">
-        <input type="text" id="newEmployeeNumber" placeholder="Mitarbeiternummer">
-        <input type="text" id="firstName" placeholder="Vorname">
-        <input type="text" id="lastName" placeholder="Nachname">
+        <input type="text" id="newEmployeeNumber" placeholder="Mitarbeiternummer" required>
+        <input type="text" id="firstName" placeholder="Vorname" required>
+        <input type="text" id="lastName" placeholder="Nachname" required>
         <label>
             <input type="checkbox" id="existingEmployee"> Bestehender Mitarbeiter
         </label>
@@ -25,6 +25,13 @@
 
     <h2>Mitarbeiterliste</h2>
     <ul id="employeeList"></ul>
+
+    <div>
+        <h2>Alle Zeiten drucken</h2>
+        <input type="date" id="startDate" required>
+        <input type="date" id="endDate" required>
+        <button id="printAllTimesButton">Alle Zeiten drucken</button>
+    </div>
 
     <script src="../js/admin.js"></script>
     <script src="../js/add-employee.js"></script>
