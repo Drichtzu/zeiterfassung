@@ -1,90 +1,137 @@
+// Logging-Funktion
+function log(message, type = 'info') {
+    const types = {
+        info: 'color: blue',
+        warn: 'color: orange',
+        error: 'color: red'
+    };
+    console.log(`%c[Zeiterfassung] ${message}`, types[type]);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    const calculateButton = document.getElementById('calculateButton');
-    calculateButton.addEventListener('click', zeitrechnung);
-});
+    log('DOM vollständig geladen');
 
-function zeitrechnung() {
-    const employeeNumber = document.getElementById("employeeNumber").value;
-    const timeStart = document.getElementById("start").value;
-    const timeEnd = document.getElementById("end").value;
-    const breakTime = parseInt(document.getElementById("break").value) || 0;
+    const loginForm = document.getElementById('loginForm');
+    const timeForm = document.getElementById('timeForm');
+    const employeeLogin = document.getElementById('employeeLogin');
+    const timeTracking = document.getElementById('timeTracking');
+    const employeeName = document.getElementById('employeeName');
+    const startTimeBtn = document.getElementById('startTime');
+    const endTimeBtn = document.getElementById('endTime');
 
-    if (!employeeNumber || !timeStart || !timeEnd) {
-        alert("Bitte füllen Sie alle Pflichtfelder aus.");
+    if (!loginForm || !timeForm || !employeeLogin || !timeTracking || !employeeName || !startTimeBtn || !endTimeBtn) {
+        log('Ein oder mehrere erforderliche Elemente wurden nicht gefunden', 'error');
         return;
     }
 
-    if (!isValidEmployeeNumber(employeeNumber)) {
-        alert("Ungültige Mitarbeiternummer. Bitte überprüfen Sie Ihre Eingabe.");
-        return;
-    }
-
-    if (!isQuarterHourTime(timeStart) || !isQuarterHourTime(timeEnd)) {
-        alert("Bitte geben Sie die Zeiten im Viertelstundentakt ein (00, 15, 30, 45 Minuten).");
-        return;
-    }
-
-    if (breakTime < 0 || breakTime % 15 !== 0) {
-        alert("Die Pausenzeit muss positiv und im Viertelstundentakt sein.");
-        return;
-    }
-
-    const startMinutes = convertToMinutes(timeStart);
-    const endMinutes = convertToMinutes(timeEnd);
-    let totalMinutes = endMinutes - startMinutes - breakTime;
-
-    if (totalMinutes < 0) {
-        totalMinutes += 24 * 60;
-    }
-
-    if (totalMinutes < 0) {
-        alert("Die Endzeit muss nach der Startzeit liegen.");
-        return;
-    }
-
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-
-    alert(`Arbeitszeit für Mitarbeiter ${employeeNumber}: ${hours} Stunden und ${minutes} Minuten`);
-
-    saveTime(employeeNumber, timeStart, timeEnd, breakTime, totalMinutes);
-}
-
-function convertToMinutes(timeString) {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-}
-
-function isQuarterHourTime(timeString) {
-    const minutes = timeString.split(':')[1];
-    return ['00', '15', '30', '45'].includes(minutes);
-}
-
-function isValidEmployeeNumber(number) {
-    const employees = JSON.parse(localStorage.getItem('employees')) || [];
-    return employees.some(emp => emp.number === number);
-}
-
-function saveTime(employeeNumber, start, end, breakTime, totalMinutes) {
-    let times = JSON.parse(localStorage.getItem('erfassteZeiten')) || [];
-    const employees = JSON.parse(localStorage.getItem('employees')) || [];
-    const employee = employees.find(emp => emp.number === employeeNumber);
-
-    if (!employee) {
-        alert('Mitarbeiter nicht gefunden. Bitte überprüfen Sie die Mitarbeiternummer.');
-        return;
-    }
-
-    times.push({
-        employeeNumber: employeeNumber,
-        firstName: employee.firstName,
-        lastName: employee.lastName,
-        datum: new Date().toLocaleDateString(),
-        start: start,
-        end: end,
-        pause: breakTime,
-        gesamtzeit: totalMinutes,
-        timestamp: new Date().toISOString() // Hinzufügen des Zeitstempels
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        log('Login-Formular abgesendet');
+        const employeeNumber = document.getElementById('employeeNumber').value;
+        
+        fetch('/api/validate-employee.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ employeeNumber: employeeNumber })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                log(`Mitarbeiter ${data.name} erfolgreich eingeloggt`);
+                employeeLogin.style.display = 'none';
+                timeTracking.style.display = 'block';
+                employeeName.textContent = data.name;
+                sessionStorage.setItem('currentEmployee', JSON.stringify(data));
+            } else {
+                log(`Ungültige Mitarbeiternummer: ${employeeNumber}`, 'warn');
+                alert('Ungültige Mitarbeiternummer');
+            }
+        })
+        .catch(error => {
+            log(`Fehler beim Validieren des Mitarbeiters: ${error}`, 'error');
+            console.error('Error:', error);
+            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+        });
     });
-    localStorage.setItem('erfassteZeiten', JSON.stringify(times));
-}
+
+    startTimeBtn.addEventListener('click', function() {
+        log('Startzeit-Button geklickt');
+        this.disabled = true;
+        endTimeBtn.disabled = false;
+    });
+
+    endTimeBtn.addEventListener('click', function() {
+        log('Endzeit-Button geklickt');
+        this.disabled = true;
+    });
+
+    timeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        log('Zeiterfassungs-Formular abgesendet');
+        const employee = JSON.parse(sessionStorage.getItem('currentEmployee'));
+        const pauseDuration = document.getElementById('pauseDuration').value;
+
+        if (!startTimeBtn.disabled || !endTimeBtn.disabled) {
+            log('Start- oder Endzeit fehlt', 'warn');
+            alert('Bitte Start- und Endzeit angeben');
+            return;
+        }
+
+        const timeData = {
+            employeeId: employee.id,
+            startTime: startTimeBtn.dataset.time,
+            endTime: endTimeBtn.dataset.time,
+            pauseDuration: pauseDuration
+        };
+
+        log(`Sende Zeitdaten: ${JSON.stringify(timeData)}`);
+
+        fetch('/api/record-time.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(timeData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                log('Zeit erfolgreich erfasst');
+                alert('Zeit erfolgreich erfasst');
+                resetForm();
+            } else {
+                log(`Fehler beim Erfassen der Zeit: ${data.message}`, 'error');
+                alert('Fehler beim Erfassen der Zeit: ' + data.message);
+            }
+        })
+        .catch(error => {
+            log(`Fehler beim Senden der Zeitdaten: ${error}`, 'error');
+            console.error('Error:', error);
+            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+        });
+    });
+
+    function resetForm() {
+        log('Formular wird zurückgesetzt');
+        startTimeBtn.disabled = false;
+        endTimeBtn.disabled = true;
+        document.getElementById('pauseDuration').value = '';
+        delete startTimeBtn.dataset.time;
+        delete endTimeBtn.dataset.time;
+        startTimeBtn.textContent = 'Startzeit';
+        endTimeBtn.textContent = 'Endzeit';
+    }
+
+    [startTimeBtn, endTimeBtn].forEach(btn => {
+        btn.addEventListener('click', function() {
+            const now = new Date();
+            this.dataset.time = now.toISOString().substr(11, 8);
+            this.textContent = `${this.textContent.split(' ')[0]} ${this.dataset.time}`;
+            log(`${this.textContent.split(' ')[0]} gesetzt: ${this.dataset.time}`);
+        });
+    });
+
+    log('Zeiterfassungs-Skript initialisiert');
+});
