@@ -11,32 +11,62 @@ function log(message, type = 'info') {
 document.addEventListener('DOMContentLoaded', function() {
     log('DOM vollständig geladen');
 
-    const loginForm = document.getElementById('loginForm');
-    const timeForm = document.getElementById('timeForm');
-    const employeeLogin = document.getElementById('employeeLogin');
-    const timeTracking = document.getElementById('timeTracking');
-    const employeeName = document.getElementById('employeeName');
-    const startTimeBtn = document.getElementById('startTime');
-    const endTimeBtn = document.getElementById('endTime');
+    // Anpassen der Selektoren an die vorhandene HTML-Struktur
+    const loginForm = document.querySelector('form');
+    const timeForm = document.getElementById('timeForm') || document.createElement('form');
+    const employeeLogin = document.querySelector('.container');
+    const timeTracking = document.getElementById('timeTracking') || document.createElement('div');
+    const employeeName = document.getElementById('employeeName') || document.createElement('span');
+    const startTimeBtn = document.getElementById('startTime') || document.createElement('button');
+    const endTimeBtn = document.getElementById('endTime') || document.createElement('button');
+    const employeeNumberInput = document.getElementById('employeeNumber');
+    const pauseDurationInput = document.getElementById('pauseDuration') || document.createElement('input');
 
-    // Überprüfen Sie jedes Element einzeln und loggen Sie, welches fehlt
-    if (!loginForm) log('loginForm nicht gefunden', 'error');
-    if (!timeForm) log('timeForm nicht gefunden', 'error');
-    if (!employeeLogin) log('employeeLogin nicht gefunden', 'error');
-    if (!timeTracking) log('timeTracking nicht gefunden', 'error');
-    if (!employeeName) log('employeeName nicht gefunden', 'error');
-    if (!startTimeBtn) log('startTimeBtn nicht gefunden', 'error');
-    if (!endTimeBtn) log('endTimeBtn nicht gefunden', 'error');
+    // Überprüfen und Loggen der Elemente
+    if (!loginForm) log('loginForm nicht gefunden', 'warn');
+    if (!employeeLogin) log('employeeLogin nicht gefunden', 'warn');
+    if (!employeeNumberInput) log('employeeNumber Input nicht gefunden', 'warn');
 
-    if (!loginForm || !timeForm || !employeeLogin || !timeTracking || !employeeName || !startTimeBtn || !endTimeBtn) {
-        log('Ein oder mehrere erforderliche Elemente wurden nicht gefunden', 'error');
-        return;
+    // Erstellen und Hinzufügen fehlender Elemente
+    if (!timeTracking.id) {
+        timeTracking.id = 'timeTracking';
+        timeTracking.style.display = 'none';
+        employeeLogin.appendChild(timeTracking);
+    }
+
+    if (!employeeName.id) {
+        employeeName.id = 'employeeName';
+        timeTracking.appendChild(employeeName);
+    }
+
+    if (!startTimeBtn.id) {
+        startTimeBtn.id = 'startTime';
+        startTimeBtn.textContent = 'Startzeit';
+        timeTracking.appendChild(startTimeBtn);
+    }
+
+    if (!endTimeBtn.id) {
+        endTimeBtn.id = 'endTime';
+        endTimeBtn.textContent = 'Endzeit';
+        timeTracking.appendChild(endTimeBtn);
+    }
+
+    if (!pauseDurationInput.id) {
+        pauseDurationInput.id = 'pauseDuration';
+        pauseDurationInput.type = 'number';
+        pauseDurationInput.placeholder = 'Pausendauer in Minuten';
+        timeTracking.appendChild(pauseDurationInput);
+    }
+
+    if (!timeForm.id) {
+        timeForm.id = 'timeForm';
+        timeTracking.appendChild(timeForm);
     }
 
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         log('Login-Formular abgesendet');
-        const employeeNumber = document.getElementById('employeeNumber').value;
+        const employeeNumber = employeeNumberInput.value;
         
         fetch('/api/validate-employee.php', {
             method: 'POST',
@@ -82,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         log('Zeiterfassungs-Formular abgesendet');
         const employee = JSON.parse(sessionStorage.getItem('currentEmployee'));
-        const pauseDuration = document.getElementById('pauseDuration').value;
+        const pauseDuration = pauseDurationInput.value;
 
         if (!startTimeBtn.disabled || !endTimeBtn.disabled) {
             log('Start- oder Endzeit fehlt', 'warn');
@@ -128,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         log('Formular wird zurückgesetzt');
         startTimeBtn.disabled = false;
         endTimeBtn.disabled = true;
-        document.getElementById('pauseDuration').value = '';
+        pauseDurationInput.value = '';
         delete startTimeBtn.dataset.time;
         delete endTimeBtn.dataset.time;
         startTimeBtn.textContent = 'Startzeit';
