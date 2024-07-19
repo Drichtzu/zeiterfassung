@@ -5,7 +5,7 @@ function log(message, type = 'info') {
         warn: 'color: orange',
         error: 'color: red'
     };
-    console.log(`%c[Zeiterfassung] ${message}`, types[type]);
+    console.log(`%c[Zeitrechnung] ${message}`, types[type]);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -18,6 +18,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const employeeName = document.getElementById('employeeName');
     const startTimeBtn = document.getElementById('startTime');
     const endTimeBtn = document.getElementById('endTime');
+
+    // Überprüfen Sie jedes Element einzeln und loggen Sie, welches fehlt
+    if (!loginForm) log('loginForm nicht gefunden', 'error');
+    if (!timeForm) log('timeForm nicht gefunden', 'error');
+    if (!employeeLogin) log('employeeLogin nicht gefunden', 'error');
+    if (!timeTracking) log('timeTracking nicht gefunden', 'error');
+    if (!employeeName) log('employeeName nicht gefunden', 'error');
+    if (!startTimeBtn) log('startTimeBtn nicht gefunden', 'error');
+    if (!endTimeBtn) log('endTimeBtn nicht gefunden', 'error');
 
     if (!loginForm || !timeForm || !employeeLogin || !timeTracking || !employeeName || !startTimeBtn || !endTimeBtn) {
         log('Ein oder mehrere erforderliche Elemente wurden nicht gefunden', 'error');
@@ -60,11 +69,13 @@ document.addEventListener('DOMContentLoaded', function() {
         log('Startzeit-Button geklickt');
         this.disabled = true;
         endTimeBtn.disabled = false;
+        setTime(this);
     });
 
     endTimeBtn.addEventListener('click', function() {
         log('Endzeit-Button geklickt');
         this.disabled = true;
+        setTime(this);
     });
 
     timeForm.addEventListener('submit', function(e) {
@@ -124,14 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
         endTimeBtn.textContent = 'Endzeit';
     }
 
-    [startTimeBtn, endTimeBtn].forEach(btn => {
-        btn.addEventListener('click', function() {
-            const now = new Date();
-            this.dataset.time = now.toISOString().substr(11, 8);
-            this.textContent = `${this.textContent.split(' ')[0]} ${this.dataset.time}`;
-            log(`${this.textContent.split(' ')[0]} gesetzt: ${this.dataset.time}`);
-        });
-    });
+    function setTime(button) {
+        const now = new Date();
+        button.dataset.time = now.toISOString().substr(11, 8);
+        button.textContent = `${button.textContent.split(' ')[0]} ${button.dataset.time}`;
+        log(`${button.textContent.split(' ')[0]} gesetzt: ${button.dataset.time}`);
+    }
 
-    log('Zeiterfassungs-Skript initialisiert');
+    log('Zeitrechnungs-Skript initialisiert');
 });
