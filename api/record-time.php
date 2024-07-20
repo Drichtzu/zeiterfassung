@@ -5,18 +5,24 @@ header('Content-Type: application/json');
 
 // Aktivieren Sie die Fehlerberichterstattung für Debugging-Zwecke
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Logfunktion
 function logMessage($message) {
-    error_log("[" . date("Y-m-d H:i:s") . "] " . $message . "\n", 3, "api_log.txt");
+    file_put_contents(__DIR__ . '/debug_log.txt', date('[Y-m-d H:i:s] ') . $message . PHP_EOL, FILE_APPEND);
 }
 
 logMessage("record-time.php wurde aufgerufen");
 
-$data = json_decode(file_get_contents('php://input'), true);
+// Überprüfen der Datenbankverbindung
+logMessage("Datenbankverbindung: " . ($pdo ? "Erfolgreich" : "Fehlgeschlagen"));
 
-logMessage("Empfangene Daten: " . json_encode($data));
+$rawData = file_get_contents('php://input');
+logMessage("Empfangene Rohdaten: " . $rawData);
+
+$data = json_decode($rawData, true);
+logMessage("Dekodierte Daten: " . print_r($data, true));
 
 if (!isset($data['employeeId']) || !isset($data['startTime']) || !isset($data['endTime']) || !isset($data['pauseDuration'])) {
     logMessage("Fehlende Pflichtfelder");
@@ -26,18 +32,19 @@ if (!isset($data['employeeId']) || !isset($data['startTime']) || !isset($data['e
 
 try {
     $stmt = $pdo->prepare("INSERT INTO time_entries (employeeId, date, startTime, endTime, pauseDuration) VALUES (?, CURDATE(), ?, ?, ?)");
+    logMessage("SQL vorbereitet");
     $result = $stmt->execute([
         $data['employeeId'],
         $data['startTime'],
         $data['endTime'],
         $data['pauseDuration']
     ]);
-
+    logMessage("SQL ausgeführt. Ergebnis: " . ($result ? "Erfolgreich" : "Fehlgeschlagen"));
     if ($result) {
         logMessage("Zeit erfolgreich erfasst");
         echo json_encode(['success' => true, 'message' => 'Zeit erfolgreich erfasst']);
     } else {
-        logMessage("Fehler beim Erfassen der Zeit: " . json_encode($stmt->errorInfo()));
+        logMessage("Fehler beim Erfassen der Zeit: " . print_r($stmt->errorInfo(), true));
         echo json_encode(['success' => false, 'message' => 'Fehler beim Erfassen der Zeit']);
     }
 } catch (PDOException $e) {
