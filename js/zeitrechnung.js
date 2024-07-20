@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             log(`Server-Antwort Status: ${response.status}`);
-            return response.json();
+            return response.json(); // Hier sicherstellen, dass die Antwort als JSON geparst wird
         })
         .then(data => {
             log(`Server-Antwort Daten: ${JSON.stringify(data)}`);
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             log(`Fehler beim Senden der Zeitdaten: ${error}`, 'error');
             console.error('Error:', error);
-            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+            alert('Ein Fehler ist aufgetreten: ' + error.message);
         });
     });
 
