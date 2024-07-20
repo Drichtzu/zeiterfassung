@@ -69,21 +69,25 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             log(`Server-Antwort Status: ${response.status}`);
-            return response.json(); // Hier sicherstellen, dass die Antwort als JSON geparst wird
+            return response.text();  // Ändern Sie dies von response.json() zu response.text()
         })
-        .then(data => {
-            log(`Server-Antwort Daten: ${JSON.stringify(data)}`);
-            if (data.success) {
-                log('Zeit erfolgreich erfasst');
-                alert('Zeit erfolgreich erfasst');
-                resetForm();
-            } else {
-                log(`Fehler beim Erfassen der Zeit: ${data.message}`, 'error');
-                alert('Fehler beim Erfassen der Zeit: ' + data.message);
+        .then(text => {
+            log(`Server-Antwort Text: ${text}`);
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    log('Zeit erfolgreich erfasst');
+                    alert('Zeit erfolgreich erfasst');
+                    resetForm();
+                } else {
+                    throw new Error(data.message || 'Unbekannter Fehler');
+                }
+            } catch (error) {
+                throw new Error('Ungültige Server-Antwort: ' + text);
             }
         })
         .catch(error => {
-            log(`Fehler beim Senden der Zeitdaten: ${error}`, 'error');
+            log(`Fehler: ${error.message}`, 'error');
             console.error('Error:', error);
             alert('Ein Fehler ist aufgetreten: ' + error.message);
         });
