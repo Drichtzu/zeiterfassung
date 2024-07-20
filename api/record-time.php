@@ -1,14 +1,20 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once 'config.php';
 
 header('Content-Type: application/json');
 
+// Aktivieren Sie die Fehlerberichterstattung für Debugging-Zwecke
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Logfunktion
 function logMessage($message) {
-    error_log($message . PHP_EOL, 3, __DIR__ . '/debug_log.txt');
+    $logFile = __DIR__ . '/debug_log.txt';
+    if (!file_exists($logFile)) {
+        file_put_contents($logFile, '');
+    }
+    file_put_contents($logFile, date('[Y-m-d H:i:s] ') . $message . PHP_EOL, FILE_APPEND);
 }
 
 logMessage("record-time.php wurde aufgerufen");
