@@ -1,18 +1,17 @@
 <?php
+ob_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+header('Content-Type: application/json');
 
 function logMessage($message) {
     error_log("[Zeiterfassung] " . $message);
 }
 
-ob_start(); // Start output buffering
-
 try {
     require_once 'config.php';
-
-    header('Content-Type: application/json');
 
     logMessage("record-time.php wurde aufgerufen");
 
@@ -63,7 +62,7 @@ try {
 
     if ($result) {
         logMessage("Zeit erfolgreich erfasst");
-        echo json_encode(['success' => true, 'message' => 'Zeit erfolgreich erfasst']);
+        $response = ['success' => true, 'message' => 'Zeit erfolgreich erfasst'];
     } else {
         throw new Exception('Fehler beim Erfassen der Zeit: ' . json_encode($stmt->errorInfo()));
     }
@@ -71,13 +70,15 @@ try {
 } catch (PDOException $e) {
     logMessage("Datenbankfehler: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Datenbankfehler']);
+    $response = ['success' => false, 'message' => 'Datenbankfehler'];
 } catch (Exception $e) {
     logMessage("Fehler: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    $response = ['success' => false, 'message' => $e->getMessage()];
 }
 
 logMessage("record-time.php Ausführung beendet");
 
-ob_end_clean(); // End output buffering and clean output buffer
+$output = ob_get_clean();
+$response['debug'] = $output;
+echo json_encode($response);
