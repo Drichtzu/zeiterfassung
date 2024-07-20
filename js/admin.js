@@ -27,12 +27,11 @@ function initializeEventListeners() {
     const addEmployeeButton = document.getElementById('addEmployeeButton');
     const existingEmployeeCheckbox = document.getElementById('existingEmployee');
     const existingHoursGroup = document.getElementById('existingHoursGroup');
-    const detailsButton = document.getElementById('detailsButton');
-    const employeeNumberInput = document.getElementById('employeeNumber');
+    const printAllButton = document.getElementById('printAllButton');
 
     if (newEmployeeButton) {
         newEmployeeButton.addEventListener('click', () => {
-            newEmployeeForm.style.display = 'block';
+            newEmployeeForm.style.display = newEmployeeForm.style.display === 'none' ? 'block' : 'none';
         });
     }
 
@@ -46,11 +45,8 @@ function initializeEventListeners() {
         addEmployeeButton.addEventListener('click', addNewEmployee);
     }
 
-    if (detailsButton && employeeNumberInput) {
-        detailsButton.addEventListener('click', function() {
-            const employeeNumber = employeeNumberInput.value;
-            showEmployeeDetails(employeeNumber);
-        });
+    if (printAllButton) {
+        printAllButton.addEventListener('click', printAllTimes);
     }
 }
 
@@ -143,62 +139,23 @@ function addNewEmployee() {
     });
 }
 
+// Diese Funktionen werden in separaten Dateien implementiert
 function showEmployeeDetails(employeeNumber) {
     console.log('Details anzeigen für Mitarbeiter Nummer:', employeeNumber);
-    fetch(`/api/admin-view.php?employeeNumber=${employeeNumber}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                displayEmployeeDetails(data.employee, data.timeEntries, data.totalHours);
-            } else {
-                alert('Fehler: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ein Fehler ist aufgetreten: ' + error.message);
-        });
-}
-
-function displayEmployeeDetails(employee, timeEntries, totalHours) {
-    const detailsContainer = document.getElementById('detailsContainer');
-    detailsContainer.innerHTML = `
-        <h2>Mitarbeiterdetails</h2>
-        <p>Name: ${employee.firstName} ${employee.lastName}</p>
-        <p>Mitarbeiternummer: ${employee.number}</p>
-        <p>Gesamtstunden: ${totalHours}</p>
-        <h3>Zeiteinträge</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Datum</th>
-                    <th>Start</th>
-                    <th>Ende</th>
-                    <th>Pause</th>
-                    <th>Gesamtzeit</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${timeEntries.map(entry => `
-                    <tr>
-                        <td>${entry.date}</td>
-                        <td>${entry.start_time}</td>
-                        <td>${entry.end_time}</td>
-                        <td>${entry.pause_duration} min</td>
-                        <td>${entry.total_time_formatted}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
+    // Diese Funktion sollte in employee-details.js implementiert sein
 }
 
 function editEmployee(id) {
     console.log('Bearbeiten von Mitarbeiter ID:', id);
-    // Implementieren Sie hier die Logik zum Bearbeiten eines Mitarbeiters
+    // Diese Funktion könnte in einer separaten Datei implementiert werden
 }
 
 function deleteEmployee(id) {
     console.log('Löschen von Mitarbeiter ID:', id);
-    // Implementieren Sie hier die Logik zum Löschen eines Mitarbeiters
+    // Diese Funktion könnte in einer separaten Datei implementiert werden
+}
+
+function printAllTimes() {
+    console.log('Alle Zeiten drucken');
+    // Diese Funktion sollte in print-all-times.js implementiert sein
 }
