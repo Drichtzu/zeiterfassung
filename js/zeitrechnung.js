@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pauseDuration: pauseDuration
         };
 
-        log(`Sende Zeitdaten: ${JSON.stringify(timeData)}`);
+        log(`Gesammelte Zeitdaten: ${JSON.stringify(timeData)}`);
 
         fetch('/api/record-time.php', {
             method: 'POST',
@@ -136,8 +136,12 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(timeData)
         })
-        .then(response => response.json())
+        .then(response => {
+            log(`Server-Antwort Status: ${response.status}`);
+            return response.json();
+        })
         .then(data => {
+            log(`Server-Antwort Daten: ${JSON.stringify(data)}`);
             if (data.success) {
                 log('Zeit erfolgreich erfasst');
                 alert('Zeit erfolgreich erfasst');
