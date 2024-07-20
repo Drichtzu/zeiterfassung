@@ -13,61 +13,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Anpassen der Selektoren an die vorhandene HTML-Struktur
     const loginForm = document.querySelector('form');
-    const timeForm = document.getElementById('timeForm') || document.createElement('form');
+    const timeForm = document.getElementById('timeForm');
     const employeeLogin = document.querySelector('.container');
-    const timeTracking = document.getElementById('timeTracking') || document.createElement('div');
-    const employeeName = document.getElementById('employeeName') || document.createElement('span');
-    const startTimeBtn = document.getElementById('startTime') || document.createElement('button');
-    const endTimeBtn = document.getElementById('endTime') || document.createElement('button');
+    const timeTracking = document.getElementById('timeTracking');
+    const employeeName = document.getElementById('employeeName');
+    const startTimeBtn = document.getElementById('startTime');
+    const endTimeBtn = document.getElementById('endTime');
     const employeeNumberInput = document.getElementById('employeeNumber');
-    const pauseDurationInput = document.getElementById('pauseDuration') || document.createElement('input');
+    const pauseDurationInput = document.getElementById('pauseDuration');
 
     // Überprüfen und Loggen der Elemente
     if (!loginForm) log('loginForm nicht gefunden', 'warn');
+    if (!timeForm) log('timeForm nicht gefunden', 'warn');
     if (!employeeLogin) log('employeeLogin nicht gefunden', 'warn');
-    if (!employeeNumberInput) log('employeeNumber Input nicht gefunden', 'warn');
+    if (!timeTracking) log('timeTracking nicht gefunden', 'warn');
+    if (!employeeName) log('employeeName nicht gefunden', 'warn');
+    if (!startTimeBtn) log('startTimeBtn nicht gefunden', 'warn');
+    if (!endTimeBtn) log('endTimeBtn nicht gefunden', 'warn');
+    if (!employeeNumberInput) log('employeeNumberInput nicht gefunden', 'warn');
+    if (!pauseDurationInput) log('pauseDurationInput nicht gefunden', 'warn');
 
-    // Erstellen und Hinzufügen fehlender Elemente
-    if (!timeTracking.id) {
-        timeTracking.id = 'timeTracking';
-        timeTracking.style.display = 'none';
-        employeeLogin.appendChild(timeTracking);
-    }
-
-    if (!employeeName.id) {
-        employeeName.id = 'employeeName';
-        timeTracking.appendChild(employeeName);
-    }
-
-    if (!startTimeBtn.id) {
-        startTimeBtn.id = 'startTime';
-        startTimeBtn.textContent = 'Startzeit';
-        timeTracking.appendChild(startTimeBtn);
-    }
-
-    if (!endTimeBtn.id) {
-        endTimeBtn.id = 'endTime';
-        endTimeBtn.textContent = 'Endzeit';
-        timeTracking.appendChild(endTimeBtn);
-    }
-
-    if (!pauseDurationInput.id) {
-        pauseDurationInput.id = 'pauseDuration';
-        pauseDurationInput.type = 'number';
-        pauseDurationInput.placeholder = 'Pausendauer in Minuten';
-        timeTracking.appendChild(pauseDurationInput);
-    }
-
-    if (!timeForm.id) {
-        timeForm.id = 'timeForm';
-        timeTracking.appendChild(timeForm);
+    if (!loginForm || !timeForm || !employeeLogin || !timeTracking || !employeeName || !startTimeBtn || !endTimeBtn || !employeeNumberInput || !pauseDurationInput) {
+        log('Ein oder mehrere erforderliche Elemente wurden nicht gefunden', 'error');
+        return;
     }
 
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         log('Login-Formular abgesendet');
         const employeeNumber = employeeNumberInput.value;
-        
+
         fetch('/api/validate-employee.php', {
             method: 'POST',
             headers: {
