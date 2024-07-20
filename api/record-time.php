@@ -8,43 +8,46 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Alternative Logging-Funktion
+// Logging-Funktion
 function logMessage($message) {
-    error_log("[" . date("Y-m-d H:i:s") . "] " . $message, 0);
+    error_log("[" . date("Y-m-d H:i:s") . "] " . $message . "\n", 3, __DIR__ . "/debug_log.txt");
 }
 
 logMessage("record-time.php wurde aufgerufen");
 
-// Überprüfen der Datenbankverbindung
-logMessage("Datenbankverbindung: " . ($pdo ? "Erfolgreich" : "Fehlgeschlagen"));
+$data = json_decode(file_get_contents('php://input'), true);
 
-$rawData = file_get_contents('php://input');
-logMessage("Empfangene Rohdaten: " . $rawData);
+logMessage("Empfangene Daten: " . json_encode($data));
 
-$data = json_decode($rawData, true);
-logMessage("Dekodierte Daten: " . print_r($data, true));
-
-if (!isset($data['employeeId']) || !isset($data['startTime']) || !isset($data['endTime']) || !isset($data['pauseDuration'])) {
+if (!isset($data['employeeNumber']) || !isset($data['startTime']) || !isset($data['endTime']) || !isset($data['breakDuration'])) {
     logMessage("Fehlende Pflichtfelder");
     echo json_encode(['success' => false, 'message' => 'Fehlende Pflichtfelder']);
     exit;
 }
 
+// Validierung der Daten
+$employeeNumber = filter_var($data['employeeNumber'], FILTER_SANITIZE_STRING);
+$startTime = filter_var($data['startTime'], FILTER_SANITIZE_STRING);
+$endTime = filter_var($data['endTime'], FILTER_SANITIZE_STRING);
+$breakDuration = filter_var($data['breakDuration'], FILTER_SANITIZE_NUMBER_INT);
+
+if (!$employeeNumber || !$startTime || !$endTime) {
+    logMessage("Ungültige Daten");
+    echo json_encode(['success' => false, 'message' => 'Ungültige Daten']);
+    exit;
+}
+
 try {
-    $stmt = $pdo->prepare("INSERT INTO time_entries (employeeId, date, startTime, endTime, pauseDuration) VALUES (?, CURDATE(), ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO time_entries (employeeNumber, date, startTime, endTime, breakDuration) VALUES (?, CURDATE(), ?, ?, ?)");
     logMessage("SQL vorbereitet");
-    $result = $stmt->execute([
-        $data['employeeId'],
-        $data['startTime'],
-        $data['endTime'],
-        $data['pauseDuration']
-    ]);
+    $result = $stmt->execute([$employeeNumber, $startTime, $endTime, $breakDuration]);
     logMessage("SQL ausgeführt. Ergebnis: " . ($result ? "Erfolgreich" : "Fehlgeschlagen"));
+    
     if ($result) {
         logMessage("Zeit erfolgreich erfasst");
         echo json_encode(['success' => true, 'message' => 'Zeit erfolgreich erfasst']);
     } else {
-        logMessage("Fehler beim Erfassen der Zeit: " . print_r($stmt->errorInfo(), true));
+        logMessage("Fehler beim Erfassen der Zeit: " . json_encode($stmt->errorInfo()));
         echo json_encode(['success' => false, 'message' => 'Fehler beim Erfassen der Zeit']);
     }
 } catch (PDOException $e) {
