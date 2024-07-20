@@ -8,13 +8,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Logfunktion
+// Alternative Logging-Funktion
 function logMessage($message) {
-    $logFile = __DIR__ . '/debug_log.txt';
-    if (!file_exists($logFile)) {
-        file_put_contents($logFile, '');
-    }
-    file_put_contents($logFile, date('[Y-m-d H:i:s] ') . $message . PHP_EOL, FILE_APPEND);
+    error_log("[" . date("Y-m-d H:i:s") . "] " . $message, 0);
 }
 
 logMessage("record-time.php wurde aufgerufen");
