@@ -7,6 +7,8 @@ function logMessage($message) {
     error_log("[Zeiterfassung] " . $message);
 }
 
+ob_start(); // Start output buffering
+
 try {
     require_once 'config.php';
 
@@ -77,3 +79,5 @@ try {
 }
 
 logMessage("record-time.php Ausführung beendet");
+
+ob_end_clean(); // End output buffering and clean output buffer
