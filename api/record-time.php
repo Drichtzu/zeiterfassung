@@ -10,7 +10,11 @@ error_reporting(E_ALL);
 
 // Logfunktion
 function logMessage($message) {
-    file_put_contents(__DIR__ . '/debug_log.txt', date('[Y-m-d H:i:s] ') . $message . PHP_EOL, FILE_APPEND);
+    $logFile = __DIR__ . '/debug_log.txt';
+    if (!file_exists($logFile)) {
+        file_put_contents($logFile, '');
+    }
+    file_put_contents($logFile, date('[Y-m-d H:i:s] ') . $message . PHP_EOL, FILE_APPEND);
 }
 
 logMessage("record-time.php wurde aufgerufen");
