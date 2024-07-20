@@ -29,19 +29,24 @@ try {
         throw new Exception('Fehlende Pflichtfelder');
     }
 
-    $employeeNumber = filter_var($data['employeeNumber'], FILTER_SANITIZE_STRING);
+    $employeeNumber = filter_var($data['employeeNumber'], FILTER_SANITIZE_NUMBER_INT);
     $startTime = filter_var($data['startTime'], FILTER_SANITIZE_STRING);
     $endTime = filter_var($data['endTime'], FILTER_SANITIZE_STRING);
-    $breakDuration = filter_var($data['breakDuration'], FILTER_SANITIZE_NUMBER_INT);
+    $pauseDuration = filter_var($data['breakDuration'], FILTER_SANITIZE_NUMBER_INT);
 
     if (!$employeeNumber || !$startTime || !$endTime) {
         throw new Exception('Ungültige Daten');
     }
 
-    logMessage("Validierte Daten: employeeNumber=$employeeNumber, startTime=$startTime, endTime=$endTime, breakDuration=$breakDuration");
+    // Berechnen der Gesamtzeit in Minuten
+    $start = new DateTime($startTime);
+    $end = new DateTime($endTime);
+    $totalTime = ($end->getTimestamp() - $start->getTimestamp()) / 60 - $pauseDuration;
 
-    $stmt = $pdo->prepare("INSERT INTO time_entries (employeeNumber, date, startTime, endTime, breakDuration) VALUES (?, CURDATE(), ?, ?, ?)");
-    $result = $stmt->execute([$employeeNumber, $startTime, $endTime, $breakDuration]);
+    logMessage("Validierte Daten: employeeNumber=$employeeNumber, startTime=$startTime, endTime=$endTime, pauseDuration=$pauseDuration, totalTime=$totalTime");
+
+    $stmt = $pdo->prepare("INSERT INTO time_entries (employee_id, date, start_time, end_time, pause_duration, total_time) VALUES (?, CURDATE(), ?, ?, ?, ?)");
+    $result = $stmt->execute([$employeeNumber, $startTime, $endTime, $pauseDuration, $totalTime]);
 
     if ($result) {
         logMessage("Zeit erfolgreich erfasst");
